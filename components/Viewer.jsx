@@ -55,8 +55,8 @@ function Loader() {
 }
 
 // ─── 3D scene ────────────────────────────────────────────────────────────────
-function Scene({ wireframe, transparent, sectionCut, cutPosition, onBoundsReady }) {
-  const { scene } = useGLTF('/version2_full.glb');
+function Scene({ glbPath, wireframe, transparent, sectionCut, cutPosition, onBoundsReady }) {
+  const { scene } = useGLTF(glbPath);
   const { gl } = useThree();
   const boundsComputed = useRef(false);
 
@@ -100,6 +100,9 @@ function Scene({ wireframe, transparent, sectionCut, cutPosition, onBoundsReady 
 }
 
 useGLTF.preload('/version2_full.glb');
+useGLTF.preload('/vvg_v3.glb');
+
+const MODEL_PATHS = { v2: '/version2_full.glb', v3: '/vvg_v3.glb' };
 
 // ─── Toolbar icons ────────────────────────────────────────────────────────────
 const IconWireframe = () => (
@@ -204,12 +207,18 @@ function Tab({ active, onClick, children }) {
 export default function Viewer() {
   const containerRef = useRef(null);
   const [tab, setTab] = useState('info');
+  const [modelVersion, setModelVersion] = useState('v2');
   const [wireframe, setWireframe] = useState(false);
   const [transparent, setTransparent] = useState(false);
   const [sectionCut, setSectionCut] = useState(false);
   const [cutPosition, setCutPosition] = useState(0);
   const [cutRange, setCutRange] = useState({ min: -1, max: 1 });
   const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const handleModelChange = useCallback((v) => {
+    setModelVersion(v);
+    setSectionCut(false); // reset cut — new model has different bounds
+  }, []);
 
   const handleBoundsReady = useCallback((minY, maxY) => {
     const pad = Math.max(Math.abs(maxY - minY) * 0.04, 0.02);
@@ -344,6 +353,8 @@ export default function Viewer() {
             <Suspense fallback={<Loader />}>
               <Bounds fit clip margin={1.4}>
                 <Scene
+                  key={modelVersion}
+                  glbPath={MODEL_PATHS[modelVersion]}
                   wireframe={wireframe}
                   transparent={transparent}
                   sectionCut={sectionCut}
@@ -351,7 +362,7 @@ export default function Viewer() {
                   onBoundsReady={handleBoundsReady}
                 />
               </Bounds>
-              <ZoomUnlocker />
+              <ZoomUnlocker key={modelVersion} />
             </Suspense>
 
             <OrbitControls
@@ -381,6 +392,51 @@ export default function Viewer() {
               />
             </GizmoHelper>
           </Canvas>
+
+          {/* Model version switcher — left side */}
+          <div
+            style={{
+              position: 'absolute',
+              left: 16,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              zIndex: 10,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 4,
+              background: 'rgba(8,8,18,0.92)',
+              border: '1px solid rgba(255,255,255,0.07)',
+              borderRadius: 12,
+              padding: '8px 6px',
+              backdropFilter: 'blur(24px)',
+              WebkitBackdropFilter: 'blur(24px)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.55)',
+            }}
+          >
+            {['v2', 'v3'].map((v) => (
+              <button
+                key={v}
+                onClick={() => handleModelChange(v)}
+                style={{
+                  padding: '8px 12px',
+                  borderRadius: 8,
+                  border: modelVersion === v ? '1px solid rgba(99,179,237,0.45)' : '1px solid transparent',
+                  background: modelVersion === v ? 'rgba(66,153,225,0.18)' : 'transparent',
+                  color: modelVersion === v ? '#90cdf4' : 'rgba(255,255,255,0.38)',
+                  cursor: 'pointer',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  fontFamily: 'inherit',
+                  letterSpacing: 1.5,
+                  textTransform: 'uppercase',
+                  outline: 'none',
+                  transition: 'background 0.12s, color 0.12s, border-color 0.12s',
+                }}
+              >
+                {v.toUpperCase()}
+              </button>
+            ))}
+          </div>
 
           {/* Viewer controls */}
           <div

@@ -1,0 +1,28 @@
+MOTIVE NOZZLE (C–D)
+| Parameter | Value |
+|---|---|
+| Inlet / Throat / Exit Ø | 4.0 / 1.0 / 1.8 mm |
+| Converging half-angle | 20° |
+| Diverging half-angle | 6° |
+| Conv. / Throat / Div. length | 4.1 / 0.5 / 3.8 mm |
+| Total nozzle length | 8.4 mm |o
+SUCTION CHAMBER
+| Parameter | Value |
+|---|---|
+| Diameter × Length | 8.0 × 10.0 mm |
+| Nozzle projection into chamber | 2.0 mm |
+CONSTANT AREA MIXING SECTION
+| Parameter | Value |
+|---|---|
+| Diameter | 4.0 mm |
+| Length | 15.0 mm |
+DIFFUSER (Diverging)
+| Parameter | Value |
+|---|---|
+| Inlet Ø / Outlet Ø | 4.0 / 7.0 mm |
+| Half-angle | 6° |
+| Length | 17.0 mm |
+DEVICE TOTAL
+| Parameter | Value |
+|---|---|
+| Overall length | ≈ 40 mm |
